@@ -1,7 +1,7 @@
 name: dungeon
 description: "QuickSlot — book sports slots without double-booking."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+3
 
 environment:
   sdk: ^3.10.1

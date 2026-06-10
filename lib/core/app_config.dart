@@ -9,9 +9,12 @@
 ///   • Deployed Cloud Function:
 ///       flutter run --dart-define=API_BASE_URL=https://us-central1-<proj>.cloudfunctions.net/api
 class AppConfig {
+  // Hardcoded to the deployed Cloud Function so release / TestFlight builds work
+  // with a plain `flutter build` (no --dart-define needed). Still overridable for
+  // local dev: --dart-define=API_BASE_URL=http://localhost:8081
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:8081',
+    defaultValue: 'https://api-oupv7skwsa-uc.a.run.app',
   );
 
   /// Network timeout for API calls.
