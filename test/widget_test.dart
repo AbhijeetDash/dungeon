@@ -1,30 +1,60 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:dungeon/main.dart';
+import 'package:dungeon/core/date_x.dart';
+import 'package:dungeon/data/models/booking.dart';
+import 'package:dungeon/data/models/slot.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('DateX', () {
+    test('ymd is zero-padded YYYY-MM-DD', () {
+      expect(DateX.ymd(DateTime(2026, 6, 9)), '2026-06-09');
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    test('parseYmd round-trips a valid date', () {
+      final d = DateX.parseYmd('2026-06-09');
+      expect(d, isNotNull);
+      expect(d!.year, 2026);
+      expect(d.month, 6);
+      expect(d.day, 9);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('parseYmd returns null for garbage', () {
+      expect(DateX.parseYmd('not-a-date'), isNull);
+    });
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  group('Slot', () {
+    Slot make(String status) => Slot(
+          id: 'x',
+          venueId: 'v',
+          date: '2026-06-09',
+          hour: 9,
+          label: '09:00 - 10:00',
+          band: TimeOfDayBand.morning,
+          status: status,
+        );
+
+    test('booked/available derive from status', () {
+      expect(make('booked').booked, isTrue);
+      expect(make('booked').available, isFalse);
+      expect(make('available').available, isTrue);
+    });
+  });
+
+  group('Booking', () {
+    test('timeLabel renders the hour range; isActive reflects status', () {
+      const b = Booking(
+        id: 'b',
+        userId: 'u',
+        venueId: 'v',
+        date: '2026-06-09',
+        hour: 18,
+        slotId: 's',
+        status: 'active',
+        createdAt: '',
+      );
+      expect(b.timeLabel, '18:00 - 19:00');
+      expect(b.isActive, isTrue);
+    });
   });
 }
