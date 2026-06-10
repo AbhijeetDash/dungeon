@@ -1,0 +1,8 @@
+# Firebase emulator + tooling artifacts
+*-debug.log
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+firestore-export/
+.firebase/
+.runtimeconfig.json

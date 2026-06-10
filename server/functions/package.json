@@ -1,0 +1,21 @@
+{
+  "name": "quickslot-functions",
+  "version": "1.0.0",
+  "description": "QuickSlot REST API — Express on Cloud Functions, backed by Firestore.",
+  "main": "index.js",
+  "private": true,
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "dev": "node local.js",
+    "seed": "node seed.js",
+    "test:concurrency": "node test/concurrency.sim.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^5.1.1"
+  }
+}

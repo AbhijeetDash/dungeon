@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "demo-quickslot",
+    "dev": "quickslot-798d1"
+  },
+  "targets": {},
+  "etags": {}
+}

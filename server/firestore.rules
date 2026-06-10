@@ -1,0 +1,49 @@
+rules_version = '2';
+
+// QuickSlot security model
+// ------------------------
+// Auth is intentionally light (an `X-User-Id` header validated at the API layer),
+// per the brief. ALL database access goes through our backend, which uses the
+// Firebase Admin SDK. The Admin SDK runs with privileged credentials and BYPASSES
+// these rules entirely.
+//
+// Therefore these rules exist as a hard safety net: they DENY every direct client
+// SDK read and write. The database is reachable ONLY through the validated,
+// concurrency-safe REST API. This is least privilege — the attack surface is the
+// API (which validates input and runs transactions), never the raw database.
+//
+// A second, deliberate reason writes are server-only: a booking write must run a
+// cross-document Firestore transaction (slot doc + booking doc) to guarantee no
+// double-booking. A client-side write could never make that guarantee, so even
+// with real auth we would keep booking writes on the server.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny: no direct client access to anything.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // -----------------------------------------------------------------------
+    // PRODUCTION VARIANT (commented) — what we'd enable if the client used real
+    // Firebase Auth and read some data directly. Writes still stay server-only.
+    //
+    // match /venues/{venueId} {
+    //   allow read: if true;          // public catalog
+    //   allow write: if false;        // seeded/managed server-side only
+    // }
+    //
+    // match /slots/{slotId} {
+    //   allow read: if true;          // anyone can see availability
+    //   allow write: if false;        // only the transactional API may mutate
+    // }
+    //
+    // match /bookings/{bookingId} {
+    //   allow read: if request.auth != null
+    //               && resource.data.userId == request.auth.uid;  // owner only
+    //   allow write: if false;        // created/cancelled only via the API tx
+    // }
+    // -----------------------------------------------------------------------
+  }
+}
