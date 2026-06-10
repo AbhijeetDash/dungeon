@@ -15,8 +15,9 @@ dependencies:
   flutter_bloc: ^9.1.1
   equatable: ^2.0.7
 
-  # Networking to our REST API.
-  http: ^1.2.2
+  # Networking to our REST API. Dio is used for its interceptor pipeline:
+  # request-structure validation, response-structure validation, and dev logging.
+  dio: ^5.4.0
 
 dev_dependencies:
   flutter_test:
