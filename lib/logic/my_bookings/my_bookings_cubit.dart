@@ -64,7 +64,7 @@ class MyBookingsCubit extends Cubit<MyBookingsState> {
       cancellingId: bookingId,
     ));
     try {
-      await _bookings.cancel(bookingId: bookingId, userId: userId);
+      await _bookings.cancel(bookingId);
       await load(userId); // refresh → fresh state clears cancellingId
     } on ApiException catch (e) {
       emit(MyBookingsState(
