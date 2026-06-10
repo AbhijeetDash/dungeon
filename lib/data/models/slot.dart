@@ -1,17 +1,11 @@
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'slot.g.dart';
+
+/// Enum values match the API's `timeOfDay` strings exactly, so json_serializable
+/// maps them by name with no custom converter.
 enum TimeOfDayBand { morning, afternoon, evening }
-
-TimeOfDayBand bandFromString(String? s) {
-  switch (s) {
-    case 'morning':
-      return TimeOfDayBand.morning;
-    case 'afternoon':
-      return TimeOfDayBand.afternoon;
-    default:
-      return TimeOfDayBand.evening;
-  }
-}
 
 extension TimeOfDayBandX on TimeOfDayBand {
   String get label {
@@ -26,14 +20,18 @@ extension TimeOfDayBandX on TimeOfDayBand {
   }
 }
 
+@JsonSerializable()
 class Slot extends Equatable {
   final String id;
   final String venueId;
   final String date;
   final int hour;
   final String label; // "06:00 - 07:00"
+
+  @JsonKey(name: 'timeOfDay', unknownEnumValue: TimeOfDayBand.evening)
   final TimeOfDayBand band;
-  final bool booked;
+
+  final String status; // 'available' | 'booked'
 
   const Slot({
     required this.id,
@@ -42,21 +40,15 @@ class Slot extends Equatable {
     required this.hour,
     required this.label,
     required this.band,
-    required this.booked,
+    required this.status,
   });
 
-  factory Slot.fromJson(Map<String, dynamic> json) => Slot(
-        id: json['id'] as String,
-        venueId: json['venueId'] as String,
-        date: json['date'] as String,
-        hour: (json['hour'] as num).toInt(),
-        label: json['label'] as String,
-        band: bandFromString(json['timeOfDay'] as String?),
-        booked: (json['status'] as String?) == 'booked',
-      );
+  factory Slot.fromJson(Map<String, dynamic> json) => _$SlotFromJson(json);
+  Map<String, dynamic> toJson() => _$SlotToJson(this);
 
+  bool get booked => status == 'booked';
   bool get available => !booked;
 
   @override
-  List<Object?> get props => [id, venueId, date, hour, label, band, booked];
+  List<Object?> get props => [id, venueId, date, hour, label, band, status];
 }

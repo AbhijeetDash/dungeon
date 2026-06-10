@@ -1,13 +1,20 @@
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'booking.g.dart';
+
+@JsonSerializable()
 class Booking extends Equatable {
   final String id;
   final String userId;
   final String venueId;
   final String date;
   final int hour;
+  @JsonKey(defaultValue: '')
   final String slotId;
+  @JsonKey(defaultValue: 'active')
   final String status; // 'active' | 'cancelled'
+  @JsonKey(defaultValue: '')
   final String createdAt;
 
   const Booking({
@@ -21,16 +28,8 @@ class Booking extends Equatable {
     required this.createdAt,
   });
 
-  factory Booking.fromJson(Map<String, dynamic> json) => Booking(
-        id: json['id'] as String,
-        userId: json['userId'] as String,
-        venueId: json['venueId'] as String,
-        date: json['date'] as String,
-        hour: (json['hour'] as num).toInt(),
-        slotId: (json['slotId'] ?? '') as String,
-        status: (json['status'] ?? 'active') as String,
-        createdAt: (json['createdAt'] ?? '') as String,
-      );
+  factory Booking.fromJson(Map<String, dynamic> json) => _$BookingFromJson(json);
+  Map<String, dynamic> toJson() => _$BookingToJson(this);
 
   bool get isActive => status == 'active';
 

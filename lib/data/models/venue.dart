@@ -1,14 +1,25 @@
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'venue.g.dart';
+
+@JsonSerializable()
 class Venue extends Equatable {
   final String id;
   final String name;
+  @JsonKey(defaultValue: '')
   final String sport;
+  @JsonKey(defaultValue: '')
   final String location;
+  @JsonKey(defaultValue: 0)
   final int pricePerHour;
+  @JsonKey(defaultValue: 'INR')
   final String currency;
+  @JsonKey(defaultValue: '🏟️')
   final String emoji;
+  @JsonKey(defaultValue: 6)
   final int openHour;
+  @JsonKey(defaultValue: 22)
   final int closeHour;
 
   const Venue({
@@ -23,17 +34,8 @@ class Venue extends Equatable {
     required this.closeHour,
   });
 
-  factory Venue.fromJson(Map<String, dynamic> json) => Venue(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        sport: (json['sport'] ?? '') as String,
-        location: (json['location'] ?? '') as String,
-        pricePerHour: (json['pricePerHour'] ?? 0) as int,
-        currency: (json['currency'] ?? 'INR') as String,
-        emoji: (json['emoji'] ?? '🏟️') as String,
-        openHour: (json['openHour'] ?? 6) as int,
-        closeHour: (json['closeHour'] ?? 22) as int,
-      );
+  factory Venue.fromJson(Map<String, dynamic> json) => _$VenueFromJson(json);
+  Map<String, dynamic> toJson() => _$VenueToJson(this);
 
   String get currencySymbol {
     switch (currency) {

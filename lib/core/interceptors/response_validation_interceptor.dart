@@ -17,6 +17,19 @@ class ResponseValidationInterceptor extends Interceptor {
     final path = response.requestOptions.path.split('?').first;
     final data = response.data;
 
+    // Parse guard: every endpoint returns a JSON object/array. If Dio handed us
+    // anything else (e.g. an HTML error page from a wrong base URL), fail clearly.
+    if (data is! Map && data is! List) {
+      return handler.reject(
+        DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          type: DioExceptionType.badResponse,
+          error: const ApiException(0, 'BAD_RESPONSE', 'Response body was not JSON.'),
+        ),
+      );
+    }
+
     bool hasList(String key) => data is Map && data[key] is List;
     bool hasKeys(List<String> keys) =>
         data is Map && keys.every(data.containsKey);
