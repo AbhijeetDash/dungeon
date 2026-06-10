@@ -77,25 +77,34 @@ class AppTheme {
           ),
         ),
       ),
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(
-          fontSize: 30,
-          fontWeight: FontWeight.w800,
-          color: AppColors.textPrimary,
-        ),
-        titleLarge: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
-        ),
-        titleMedium: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
-        ),
-        bodyMedium: TextStyle(fontSize: 14, color: AppColors.textPrimary),
-        bodySmall: TextStyle(fontSize: 13, color: AppColors.textSecondary),
-      ),
+      // Force dark text on EVERY style (incl. bodyLarge, which TextField uses
+      // for typed input) so nothing renders white-on-white in dark mode.
+      textTheme: base.textTheme
+          .apply(
+            bodyColor: AppColors.textPrimary,
+            displayColor: AppColors.textPrimary,
+          )
+          .copyWith(
+            headlineLarge: const TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
+            titleLarge: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+            titleMedium: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+            bodySmall: const TextStyle(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
     );
   }
 }

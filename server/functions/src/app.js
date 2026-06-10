@@ -6,6 +6,7 @@ const cors = require('cors');
 const venuesRoutes = require('./routes/venues');
 const usersRoutes = require('./routes/users');
 const bookingsRoutes = require('./routes/bookings');
+const adminRoutes = require('./routes/admin');
 const { ApiError } = require('./util');
 
 // Builds the Express app. Exported as a factory-free singleton so BOTH entry
@@ -27,6 +28,7 @@ app.get('/health', (_req, res) => res.json({ ok: true, service: 'quickslot' }));
 app.use('/venues', venuesRoutes);
 app.use('/users', usersRoutes);
 app.use('/bookings', bookingsRoutes);
+app.use('/admin', adminRoutes);
 
 // 404 for unknown routes.
 app.use((_req, res) => {

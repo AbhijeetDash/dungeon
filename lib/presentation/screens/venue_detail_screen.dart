@@ -110,63 +110,64 @@ class _VenueDetailView extends StatelessWidget {
               break;
           }
         },
-        child: Column(
-          children: [
-            _Hero(venue: venue),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                child: BlocBuilder<SlotsBloc, SlotsState>(
-                  builder: (context, state) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(venue.name,
-                            style: Theme.of(context).textTheme.titleLarge),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on_outlined,
-                                size: 16, color: AppColors.textSecondary),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(venue.location,
-                                  style: const TextStyle(
-                                      color: AppColors.textSecondary)),
-                            ),
-                            Text(venue.priceLabel,
+        // A single ListView for the whole page (hero + content) avoids any
+        // Column/Expanded/SingleChildScrollView constraint pitfalls.
+        child: BlocBuilder<SlotsBloc, SlotsState>(
+          builder: (context, state) {
+            return ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                _Hero(venue: venue),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(venue.name,
+                          style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on_outlined,
+                              size: 16, color: AppColors.textSecondary),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(venue.location,
                                 style: const TextStyle(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w700)),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        const Text('Select Date',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w700)),
-                        const SizedBox(height: 10),
-                        DateStrip(
-                          dates: DateX.upcoming(14),
-                          selected: state.selectedDate,
-                          onSelect: (d) =>
-                              context.read<SlotsBloc>().add(SlotsDateSelected(d)),
-                        ),
-                        const SizedBox(height: 18),
-                        TimeFilterChips(
-                          selected: state.bandFilter,
-                          onSelect: (b) => context
-                              .read<SlotsBloc>()
-                              .add(SlotsBandFilterChanged(b)),
-                        ),
-                        const SizedBox(height: 18),
-                        _SlotsSection(state: state),
-                      ],
-                    );
-                  },
+                                    color: AppColors.textSecondary)),
+                          ),
+                          Text(venue.priceLabel,
+                              style: const TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w700)),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      const Text('Select Date',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 10),
+                      DateStrip(
+                        dates: DateX.upcoming(14),
+                        selected: state.selectedDate,
+                        onSelect: (d) =>
+                            context.read<SlotsBloc>().add(SlotsDateSelected(d)),
+                      ),
+                      const SizedBox(height: 18),
+                      TimeFilterChips(
+                        selected: state.bandFilter,
+                        onSelect: (b) => context
+                            .read<SlotsBloc>()
+                            .add(SlotsBandFilterChanged(b)),
+                      ),
+                      const SizedBox(height: 18),
+                      _SlotsSection(state: state),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         ),
       ),
       bottomNavigationBar: _BookBar(venue: venue, onBook: _confirm),
@@ -180,22 +181,29 @@ class _Hero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        VenueImage(venue: venue, height: 200),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: CircleAvatar(
-              backgroundColor: Colors.black.withValues(alpha: 0.35),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.of(context).pop(),
+    return SizedBox(
+      height: 200,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          VenueImage(venue: venue, height: 200),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: CircleAvatar(
+                  backgroundColor: Colors.black.withValues(alpha: 0.35),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -231,10 +239,9 @@ class _SlotsSection extends StatelessWidget {
             ),
           );
         }
-        final grouped = state.groupedVisible;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: grouped.entries.map((entry) {
+          children: state.groupedVisible.entries.map((entry) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 18),
               child: Column(
@@ -287,9 +294,11 @@ class _BookBar extends StatelessWidget {
                   border: Border(top: BorderSide(color: AppColors.border)),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Expanded(
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -306,7 +315,7 @@ class _BookBar extends StatelessWidget {
                       ),
                     ),
                     SizedBox(
-                      width: 160,
+                      width: 150,
                       child: ElevatedButton(
                         onPressed: canBook ? () => onBook(context, slot) : null,
                         child: busy
