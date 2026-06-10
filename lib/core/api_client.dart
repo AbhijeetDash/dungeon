@@ -3,25 +3,27 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 
 import 'api_exception.dart';
 import 'app_config.dart';
+import 'interceptors/auth_interceptor.dart';
 import 'interceptors/dev_log_interceptor.dart';
 import 'interceptors/request_validation_interceptor.dart';
 import 'interceptors/response_validation_interceptor.dart';
 
 /// Thin wrapper around a configured [Dio] instance.
 ///
-/// Repositories call get/post/delete and receive already-decoded JSON. Three
-/// interceptors are attached (see each file):
-///   • RequestValidationInterceptor  — validates outgoing request structure
-///   • ResponseValidationInterceptor — validates incoming response structure
-///   • DevLogInterceptor             — console logging (debug builds only)
+/// Repositories call get/post/delete and receive already-decoded JSON. The
+/// interceptor pipeline (in order) is:
+///   1. AuthInterceptor             — attaches the Firebase ID token (Bearer)
+///   2. RequestValidationInterceptor  — validates outgoing request structure
+///   3. ResponseValidationInterceptor — validates incoming response structure
+///   4. DevLogInterceptor             — console logging (debug builds only)
 ///
-/// Every Dio failure is normalized to a single [ApiException], so repositories
-/// and Blocs only ever deal with one error type.
+/// Every Dio failure is normalized to a single [ApiException].
 class ApiClient {
-  ApiClient({Dio? dio}) : _dio = dio ?? _build();
+  ApiClient({required Future<String?> Function() tokenProvider, Dio? dio})
+      : _dio = dio ?? _build(tokenProvider);
   final Dio _dio;
 
-  static Dio _build() {
+  static Dio _build(Future<String?> Function() tokenProvider) {
     final dio = Dio(
       BaseOptions(
         baseUrl: AppConfig.baseUrl,
@@ -32,26 +34,19 @@ class ApiClient {
         responseType: ResponseType.json,
       ),
     );
-    // Order matters: request validation runs first; on the way back, response
-    // validation runs before the logger reports the final outcome.
+    dio.interceptors.add(AuthInterceptor(tokenProvider));
     dio.interceptors.add(RequestValidationInterceptor());
     dio.interceptors.add(ResponseValidationInterceptor());
     if (kDebugMode) dio.interceptors.add(DevLogInterceptor());
     return dio;
   }
 
-  Future<dynamic> get(String path, {String? userId}) =>
-      _run(() => _dio.get(path, options: _withUser(userId)));
+  Future<dynamic> get(String path) => _run(() => _dio.get(path));
 
-  Future<dynamic> post(String path, {Object? body, String? userId}) => _run(
-        () => _dio.post(path, data: body ?? const {}, options: _withUser(userId)),
-      );
+  Future<dynamic> post(String path, {Object? body}) =>
+      _run(() => _dio.post(path, data: body ?? const {}));
 
-  Future<dynamic> delete(String path, {String? userId}) =>
-      _run(() => _dio.delete(path, options: _withUser(userId)));
-
-  Options _withUser(String? userId) =>
-      Options(headers: {if (userId != null) 'X-User-Id': userId});
+  Future<dynamic> delete(String path) => _run(() => _dio.delete(path));
 
   Future<dynamic> _run(Future<Response> Function() request) async {
     try {
@@ -63,7 +58,6 @@ class ApiClient {
   }
 
   ApiException _toApiException(DioException e) {
-    // Errors our own interceptors raised already carry a typed ApiException.
     if (e.error is ApiException) return e.error as ApiException;
 
     switch (e.type) {

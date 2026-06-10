@@ -15,11 +15,15 @@ dependencies:
   flutter_bloc: ^9.1.1
   equatable: ^2.0.7
 
-  # Networking (interceptors: request/response validation + dev logging).
-  dio: ^5.4.0
+  # Networking (interceptors: auth, request/response validation, dev logging).
+  dio: ^5.9.2
 
   # Model (de)serialization — codegen via json_serializable.
-  json_annotation: ^4.9.0
+  json_annotation: ^4.11.0
+
+  # Firebase Authentication (email/password + Google via signInWithProvider).
+  firebase_core: ^4.8.0
+  firebase_auth: ^6.5.0
 
 dev_dependencies:
   flutter_test:
@@ -27,8 +31,8 @@ dev_dependencies:
   flutter_lints: ^6.0.0
 
   # Codegen for *.g.dart (run: dart run build_runner build).
-  build_runner: ^2.4.13
-  json_serializable: ^6.8.0
+  build_runner: ^2.15.0
+  json_serializable: ^6.13.0
 
 flutter:
   uses-material-design: true

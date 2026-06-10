@@ -5,13 +5,17 @@ import '../date_x.dart';
 
 /// Validates the structure of OUTGOING requests before they hit the network.
 /// Fails fast with a clear ApiException (no wasted round-trip) when the client
-/// would otherwise send something the API will reject — e.g. a booking without
-/// an `X-User-Id` header or a malformed body.
+/// would send something the API will reject — a mutation without an auth token,
+/// or a malformed booking body.
 ///
-/// We match on `options.path` (the relative path the repository passed, e.g.
-/// '/bookings') rather than the full URL, so this works whether the base URL is
-/// a local server or a deployed Cloud Function with an '/api' prefix.
+/// Matches on `options.path` (the relative path the repository passed), so it
+/// works whether the base URL is local or a deployed Cloud Function.
 class RequestValidationInterceptor extends Interceptor {
+  bool _hasBearer(RequestOptions o) {
+    final auth = o.headers['Authorization'];
+    return auth is String && auth.startsWith('Bearer ');
+  }
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final method = options.method.toUpperCase();
@@ -19,10 +23,7 @@ class RequestValidationInterceptor extends Interceptor {
     final problems = <String>[];
 
     if (method == 'POST' && path == '/bookings') {
-      final userId = options.headers['X-User-Id'];
-      if (userId is! String || userId.trim().isEmpty) {
-        problems.add('X-User-Id header');
-      }
+      if (!_hasBearer(options)) problems.add('auth token');
       final body = options.data;
       if (body is! Map) {
         problems.add('JSON body');
@@ -39,10 +40,9 @@ class RequestValidationInterceptor extends Interceptor {
         }
       }
     } else if (method == 'DELETE' && path.startsWith('/bookings/')) {
-      final userId = options.headers['X-User-Id'];
-      if (userId is! String || userId.trim().isEmpty) {
-        problems.add('X-User-Id header');
-      }
+      if (!_hasBearer(options)) problems.add('auth token');
+    } else if (method == 'GET' && RegExp(r'^/users/[^/]+/bookings$').hasMatch(path)) {
+      if (!_hasBearer(options)) problems.add('auth token');
     }
 
     if (problems.isNotEmpty) {
