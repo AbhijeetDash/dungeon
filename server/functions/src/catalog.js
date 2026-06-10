@@ -1,16 +1,8 @@
 'use strict';
 
-// Hardcoded users (light auth, per the brief). The client picks one of these on
-// the "login" screen and sends its id in the `X-User-Id` header.
-const USERS = [
-  { id: 'u1', name: 'Abhijeet' },
-  { id: 'u2', name: 'Riya' },
-  { id: 'u3', name: 'Karan' },
-  { id: 'u4', name: 'Meera' },
-];
-
 // Seed venues. `openHour`/`closeHour` drive slot generation (6 AM–10 PM here).
-// These are written to Firestore by `seed.js`; venue docs use `id` as the doc id.
+// Written to Firestore by seed.js; venue docs use `id` as the document id.
+// (Users now come from Firebase Auth — there is no hardcoded user list.)
 const VENUES = [
   {
     id: 'smashers',
@@ -58,4 +50,4 @@ const VENUES = [
   },
 ];
 
-module.exports = { USERS, VENUES };
+module.exports = { VENUES };
