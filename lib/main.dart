@@ -40,7 +40,7 @@ class QuickSlotApp extends StatelessWidget {
       child: BlocProvider(
         create: (_) => AuthCubit(authRepo),
         child: MaterialApp(
-          title: 'QuickSlot',
+          title: 'Dungeon',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
           home: const _AuthGate(),

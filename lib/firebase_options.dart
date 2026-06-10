@@ -51,19 +51,18 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCdGDJ2Iq1CM8AFth-uhz_9gXvZoTeNMJU',
-    appId: '1:709372252063:android:79920651c4c07eddc237aa',
+    appId: '1:709372252063:android:de014c202b292071c237aa',
     messagingSenderId: '709372252063',
     projectId: 'quickslot-798d1',
     storageBucket: 'quickslot-798d1.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCcMDbUrCjlHeflcuX8ALHZCc4BVihsIi4',
-    appId: '1:709372252063:ios:845f814ea3df012ec237aa',
+    appId: '1:709372252063:ios:3f430fd450cbfd2fc237aa',
     messagingSenderId: '709372252063',
     projectId: 'quickslot-798d1',
     storageBucket: 'quickslot-798d1.firebasestorage.app',
-    iosClientId: '709372252063-5dhjijqhonabt95an4ial8a94vcdn0o2.apps.googleusercontent.com',
-    iosBundleId: 'com.example.dungeon',
+    iosClientId: '709372252063-q8pjf1gi4jrrg09nfvlkmn640c057s95.apps.googleusercontent.com',
+    iosBundleId: 'com.abhijeet.quickslot',
   );
 }

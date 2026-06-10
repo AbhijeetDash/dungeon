@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Text(
-                      'QuickSlot',
+                      'Dungeon',
                       style: TextStyle(
                         fontSize: 34,
                         fontWeight: FontWeight.w800,
