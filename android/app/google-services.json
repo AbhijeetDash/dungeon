@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "709372252063",
+    "project_id": "quickslot-798d1",
+    "storage_bucket": "quickslot-798d1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:709372252063:android:79920651c4c07eddc237aa",
+        "android_client_info": {
+          "package_name": "com.example.dungeon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "709372252063-jajd00gue9hdklv6l827i411cg99nd47.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdGDJ2Iq1CM8AFth-uhz_9gXvZoTeNMJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "709372252063-jajd00gue9hdklv6l827i411cg99nd47.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
